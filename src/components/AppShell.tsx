@@ -66,6 +66,8 @@ export default function AppShell({
           position: "sticky",
           top: 0,
           zIndex: 20,
+          background: "rgba(11,16,32,.98)",
+
         }}
       >
         {/* Logo placeholder (swap to image later) */}
