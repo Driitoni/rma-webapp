@@ -6,78 +6,89 @@ export default function HomePage() {
   const r = useRouter();
 
   return (
-    <main style={{ minHeight: "100vh", padding: 24, display: "grid", placeItems: "center" }}>
-      <div style={{ width: "100%", maxWidth: 900, border: "1px solid #ddd", borderRadius: 16, padding: 22 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+    <main className="container" style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
+      <div className="panel" style={{ width: "100%", padding: 22 }}>
+        <div className="row">
           <div>
-            <h1 style={{ fontSize: 34, fontWeight: 950, lineHeight: 1.1 }}>
+            <div className="badge badgeGold">👑 RMA • Zero → Hero</div>
+            <h1 className="h1" style={{ marginTop: 10 }}>
               Rich Mode Academy
             </h1>
-            <p style={{ opacity: 0.7, marginTop: 10 }}>
-              Zero → Hero in 30 days: Money Systems • Trading (XAUUSD) • Mindset • Discipline
+            <p className="p">
+              30 days to build money systems, discipline, mindset, and a trading edge (XAUUSD).
             </p>
           </div>
 
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <button onClick={() => r.push("/login")} style={btnPrimary()}>
+            <button className="btn btnPrimary" onClick={() => r.push("/register")}>
+              Start Free
+            </button>
+            <button className="btn" onClick={() => r.push("/login")}>
               Login
             </button>
-            <button onClick={() => r.push("/register")} style={btn()}>
-              Register
+            <button className="btn" onClick={() => r.push("/dashboard")}>
+              Dashboard
             </button>
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12, marginTop: 18 }}>
-          <Card title="🕘 Morning Drop" text="Mindset lesson + mission + rule reminder." />
-          <Card title="🕛 Midday Drop" text="Money method + small task + skill to build." />
-          <Card title="🌙 Evening Drop" text="Trading bias + levels + setup explanation." />
+        <div className="grid grid3" style={{ marginTop: 16 }}>
+          <Feature
+            title="🕘 Morning Drop"
+            text="Mindset lesson + mission + rule reminder to win the day."
+          />
+          <Feature
+            title="🕛 Midday Drop"
+            text="Money method + small task + skill to build real income."
+          />
+          <Feature
+            title="🌙 Evening Drop"
+            text="Trading bias + key levels + setup explanation + warning."
+          />
         </div>
 
-        <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <button onClick={() => r.push("/dashboard")} style={btn()}>
-            Go to Dashboard
-          </button>
-          <button onClick={() => r.push("/private")} style={btn()}>
+        <div className="grid grid3" style={{ marginTop: 14 }}>
+          <Feature
+            title="⚔️ Discipline System"
+            text="Daily accountability to kill excuses and build consistency."
+          />
+          <Feature
+            title="📈 XAUUSD Edge"
+            text="Structured approach to entries, risk, and emotional control."
+          />
+          <Feature
+            title="🔒 Private Members"
+            text="Locked area for premium drops, challenges, and priority access."
+          />
+        </div>
+
+        <div style={{ marginTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <button className="btn" onClick={() => r.push("/private")}>
             Private Area
           </button>
+          <button className="btn" onClick={() => r.push("/upgrade")}>
+            Upgrade
+          </button>
+          <button className="btn" onClick={() => r.push("/profile")}>
+            Profile
+          </button>
         </div>
 
-        <p style={{ marginTop: 14, opacity: 0.65, fontSize: 13 }}>
-          Tip: If you’re not logged in, Dashboard/Private will redirect you to login or upgrade.
+        <p className="small" style={{ marginTop: 14 }}>
+          If you’re not logged in, Dashboard/Private will redirect you to Login or Upgrade automatically.
         </p>
       </div>
     </main>
   );
 }
 
-function Card({ title, text }: { title: string; text: string }) {
+function Feature({ title, text }: { title: string; text: string }) {
   return (
-    <div style={{ border: "1px solid #eee", borderRadius: 14, padding: 14 }}>
-      <div style={{ fontWeight: 900 }}>{title}</div>
-      <p style={{ opacity: 0.8, marginTop: 6 }}>{text}</p>
+    <div className="card">
+      <div className="h2">{title}</div>
+      <p className="p" style={{ marginTop: 8 }}>
+        {text}
+      </p>
     </div>
   );
-}
-
-function btn(): React.CSSProperties {
-  return {
-    padding: "10px 14px",
-    borderRadius: 10,
-    border: "1px solid #111",
-    cursor: "pointer",
-    background: "#fff",
-    fontWeight: 800,
-  };
-}
-function btnPrimary(): React.CSSProperties {
-  return {
-    padding: "10px 14px",
-    borderRadius: 10,
-    border: "1px solid #111",
-    cursor: "pointer",
-    background: "#111",
-    color: "#fff",
-    fontWeight: 900,
-  };
 }

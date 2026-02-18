@@ -2,118 +2,64 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "lib/supabaseClient";
-
-
+import { supabase } from "@/lib/supabaseClient";
 
 export default function RegisterPage() {
   const r = useRouter();
-  const [email, setEmail] = useState<string>("");
-  const [pass, setPass] = useState<string>("");
+  const [email, setEmail] = useState("");
+  const [pass, setPass] = useState("");
+  const [msg, setMsg] = useState<string>("");
 
-async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-  e.preventDefault();
-  alert("Creating account...");
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setMsg("");
 
-  const { error } = await supabase.auth.signUp({
-    email,
-    password: pass,
-  });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password: pass,
+    });
 
-  if (error) {
-    alert("❌ " + error.message);
-    return;
+    if (error) return setMsg("❌ " + error.message);
+
+    setMsg("✅ Account created. Now login.");
+    r.push("/login");
   }
 
-  alert("✅ Account created! Check your email to confirm (if enabled).");
-  r.push("/login");
-}
-
-
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        display: "grid",
-        placeItems: "center",
-        padding: 24,
-      }}
-    >
-      <form
-        onSubmit={onSubmit}
-        style={{
-          width: "100%",
-          maxWidth: 420,
-          border: "1px solid #ddd",
-          padding: 20,
-          borderRadius: 14,
-        }}
-      >
-        <h1 style={{ fontSize: 24, fontWeight: 900 }}>Create account</h1>
-        <p style={{ opacity: 0.7, marginTop: 6 }}>
-          Zero → Hero starts now.
-        </p>
+    <main className="container" style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
+      <div className="panel" style={{ width: "100%", maxWidth: 520, padding: 22 }}>
+        <div className="badge badgeGold">👑 Start your 30-day run</div>
+        <h1 className="h1" style={{ marginTop: 10 }}>
+          Create your account
+        </h1>
+        <p className="p">Join the system. Take action daily. Become unrecognizable.</p>
 
-        <label style={{ display: "block", marginTop: 16 }}>Email</label>
-        <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          type="email"
-          required
-          style={{
-            width: "100%",
-            padding: 12,
-            borderRadius: 10,
-            border: "1px solid #ddd",
-          }}
-        />
+        <form onSubmit={onSubmit} className="grid" style={{ marginTop: 14 }}>
+          <div>
+            <label className="small">Email</label>
+            <input className="input" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required />
+          </div>
 
-        <label style={{ display: "block", marginTop: 12 }}>
-          Password (8+)
-        </label>
-        <input
-          value={pass}
-          onChange={(e) => setPass(e.target.value)}
-          type="password"
-          minLength={8}
-          required
-          style={{
-            width: "100%",
-            padding: 12,
-            borderRadius: 10,
-            border: "1px solid #ddd",
-          }}
-        />
+          <div>
+            <label className="small">Password (8+)</label>
+            <input className="input" value={pass} onChange={(e) => setPass(e.target.value)} type="password" minLength={8} required />
+          </div>
 
-        <button
-          style={{
-            width: "100%",
-            marginTop: 14,
-            padding: 12,
-            borderRadius: 10,
-            border: "1px solid #111",
-            fontWeight: 800,
-          }}
-        >
-          Register
-        </button>
+          {msg && <div className="small">{msg}</div>}
 
-        <button
-          type="button"
-          onClick={() => r.push("/login")}
-          style={{
-            width: "100%",
-            marginTop: 10,
-            background: "transparent",
-            border: "none",
-            textDecoration: "underline",
-            opacity: 0.8,
-            cursor: "pointer",
-          }}
-        >
-          Already have an account? Login
-        </button>
-      </form>
+          <button className="btn btnPrimary" type="submit">
+            Register
+          </button>
+
+          <button className="btn" type="button" onClick={() => r.push("/login")}>
+            Already have an account? Login
+          </button>
+
+          <button className="btn" type="button" onClick={() => r.push("/")}>
+            Back home
+          </button>
+        </form>
+      </div>
     </main>
   );
 }
