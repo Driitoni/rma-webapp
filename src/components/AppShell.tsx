@@ -1,73 +1,85 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 
-type NavItem = { label: string; path: string; icon: string };
+type BottomItem = { label: string; path: string; icon: string };
 
 export default function AppShell({
   title,
-  badge,
+  tierLabel,
   children,
-  navExtra,
 }: {
   title: string;
-  badge?: string;
+  tierLabel: string; // "Free" | "Private"
   children: React.ReactNode;
-  navExtra?: React.ReactNode;
 }) {
   const r = useRouter();
   const path = usePathname();
-  const [open, setOpen] = useState(false);
 
-  const nav: NavItem[] = [
+  const [profileOpen, setProfileOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  const bottom: BottomItem[] = [
+    { label: "Home", path: "/", icon: "🏠" },
     { label: "Dashboard", path: "/dashboard", icon: "📊" },
-    { label: "Profile", path: "/profile", icon: "👤" },
-    { label: "Private", path: "/private", icon: "🔒" },
-    { label: "Upgrade", path: "/upgrade", icon: "💳" },
+    { label: "Levels", path: "/levels", icon: "📈" },
+    { label: "Profile", path: "/profile", icon: "👤" }, // taps open profile page; menu button is separate
   ];
 
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (!menuRef.current) return;
+      if (!menuRef.current.contains(e.target as Node)) setProfileOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, []);
+
+  async function logout() {
+    await supabase.auth.signOut();
+    r.replace("/login");
+  }
+
+  const isActive = (p: string) => path === p;
+
   return (
-    <div style={{ minHeight: "100vh", display: "grid", gridTemplateColumns: "280px 1fr" }}>
-      {/* Sidebar desktop */}
-      <aside
+    <div style={{ minHeight: "100vh" }}>
+      {/* Topbar: Logo + Tier + Profile menu */}
+      <header
         className="panel"
         style={{
           borderRadius: 0,
           borderLeft: "none",
+          borderRight: "none",
           borderTop: "none",
-          borderBottom: "none",
-          padding: 16,
-          display: "none",
-        }}
-        id="sidebar-desktop"
-      />
-
-      {/* Real sidebar (we use CSS via inline media query trick) */}
-      <style>{`
-        @media (min-width: 900px){
-          #sidebar-desktop{display:block;}
-          #sidebar-mobileBtn{display:none;}
-          #sidebar-drawer{display:none;}
-          #mainArea{border-left: 1px solid var(--border);}
-        }
-        @media (max-width: 899px){
-          #sidebar-desktop{display:none;}
-        }
-      `}</style>
-
-      <aside
-        id="sidebar-desktop"
-        className="panel"
-        style={{
-          borderRadius: 0,
-          borderLeft: "none",
-          borderTop: "none",
-          borderBottom: "none",
-          padding: 16,
+          padding: "12px 16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          position: "sticky",
+          top: 0,
+          zIndex: 20,
+          backdropFilter: "blur(10px)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {/* Logo area (we'll swap to your real logo later) */}
+        <button
+          onClick={() => r.push("/")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            background: "transparent",
+            border: "none",
+            color: "var(--text)",
+            cursor: "pointer",
+            padding: 0,
+          }}
+          aria-label="Go home"
+        >
           <div
             style={{
               width: 38,
@@ -82,136 +94,122 @@ export default function AppShell({
           >
             R
           </div>
-          <div>
-            <div style={{ fontWeight: 950 }}>Rich Mode Academy</div>
-            <div className="small">Zero → Hero</div>
+          <div style={{ lineHeight: 1.1 }}>
+            <div style={{ fontWeight: 950, fontSize: 14 }}>RMA</div>
+            <div className="small" style={{ marginTop: 2 }}>
+              {title}
+            </div>
           </div>
-        </div>
+        </button>
 
-        <div style={{ marginTop: 14 }} className="badge badgeGold">
-          {badge ?? "⚡ Stay consistent"}
-        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {/* Tier badge with "verified" icon */}
+          <span className={`badge ${tierLabel.toLowerCase() === "private" ? "badgeGold" : ""}`}>
+            ✅ Tier: <b style={{ marginLeft: 6 }}>{tierLabel}</b>
+          </span>
 
-        <nav style={{ marginTop: 14, display: "grid", gap: 8 }}>
-          {nav.map((it) => (
+          {/* Profile menu */}
+          <div ref={menuRef} style={{ position: "relative" }}>
             <button
-              key={it.path}
-              onClick={() => r.push(it.path)}
               className="btn"
-              style={{
-                textAlign: "left",
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                background: path === it.path ? "rgba(76,155,255,.12)" : "rgba(255,255,255,.03)",
-                borderColor: path === it.path ? "rgba(76,155,255,.35)" : "var(--border)",
-              }}
-            >
-              <span>{it.icon}</span>
-              <span style={{ fontWeight: 900 }}>{it.label}</span>
-            </button>
-          ))}
-          {navExtra}
-        </nav>
-
-        <div style={{ marginTop: 16 }} className="small">
-          © {new Date().getFullYear()} RMA
-        </div>
-      </aside>
-
-      {/* Main */}
-      <div id="mainArea" style={{ minWidth: 0 }}>
-        {/* Topbar */}
-        <header
-          className="panel"
-          style={{
-            borderRadius: 0,
-            borderLeft: "none",
-            borderRight: "none",
-            borderTop: "none",
-            padding: "14px 16px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-            <button
-              id="sidebar-mobileBtn"
-              className="btn"
-              onClick={() => setOpen(true)}
+              onClick={() => setProfileOpen((v) => !v)}
+              aria-label="Profile menu"
               style={{ padding: "10px 12px" }}
             >
-              ☰
+              ⚙️
             </button>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontWeight: 950, fontSize: 16, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {title}
-              </div>
-              <div className="small">Real system. Real progress.</div>
-            </div>
-          </div>
 
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            <button className="btn" onClick={() => r.push("/")}>Home</button>
-          </div>
-        </header>
-
-        {/* Content */}
-        <main className="container">{children}</main>
-      </div>
-
-      {/* Mobile drawer */}
-      {open && (
-        <div
-          id="sidebar-drawer"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,.55)",
-            zIndex: 50,
-            display: "grid",
-            gridTemplateColumns: "1fr",
-          }}
-          onClick={() => setOpen(false)}
-        >
-          <div
-            className="panel"
-            style={{
-              width: 320,
-              maxWidth: "90vw",
-              height: "100%",
-              borderRadius: 0,
-              padding: 16,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
-              <div style={{ fontWeight: 950 }}>RMA Menu</div>
-              <button className="btn" onClick={() => setOpen(false)}>✕</button>
-            </div>
-
-            <nav style={{ marginTop: 12, display: "grid", gap: 8 }}>
-              {nav.map((it) => (
-                <button
-                  key={it.path}
-                  onClick={() => {
-                    r.push(it.path);
-                    setOpen(false);
-                  }}
-                  className="btn"
-                  style={{ textAlign: "left", display: "flex", alignItems: "center", gap: 10 }}
-                >
-                  <span>{it.icon}</span>
-                  <span style={{ fontWeight: 900 }}>{it.label}</span>
+            {profileOpen && (
+              <div
+                className="panel"
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  top: "calc(100% + 10px)",
+                  width: 220,
+                  padding: 10,
+                }}
+              >
+                <button className="btn" style={menuBtn()} onClick={() => r.push("/settings")}>
+                  ⚙️ Settings
                 </button>
-              ))}
-              {navExtra}
-            </nav>
+                <button className="btn" style={menuBtn()} onClick={() => r.push("/wallet")}>
+                  👛 Wallet
+                </button>
+                <button className="btn btnDanger" style={menuBtn()} onClick={logout}>
+                  🚪 Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </header>
+
+      {/* Page content */}
+      <main className="container" style={{ paddingBottom: 86 }}>
+        {children}
+      </main>
+
+      {/* Mobile bottom navbar */}
+      <nav
+        className="panel"
+        style={{
+          position: "fixed",
+          left: 12,
+          right: 12,
+          bottom: 12,
+          padding: 10,
+          borderRadius: 18,
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: 8,
+          zIndex: 30,
+        }}
+      >
+        {bottom.map((it) => (
+          <button
+            key={it.path}
+            onClick={() => r.push(it.path)}
+            className="btn"
+            style={{
+              padding: 10,
+              borderRadius: 14,
+              display: "grid",
+              placeItems: "center",
+              background: isActive(it.path) ? "rgba(76,155,255,.14)" : "rgba(255,255,255,.03)",
+              borderColor: isActive(it.path) ? "rgba(76,155,255,.35)" : "var(--border)",
+            }}
+            aria-label={it.label}
+          >
+            <div style={{ fontSize: 18 }}>{it.icon}</div>
+            <div className="small" style={{ marginTop: 4 }}>
+              {it.label}
+            </div>
+          </button>
+        ))}
+      </nav>
+
+      {/* Hide bottom nav on desktop */}
+      <style>{`
+        @media (min-width: 900px){
+          nav{left: auto !important; right: auto !important;}
+        }
+        @media (min-width: 900px){
+          nav.panel{display:none !important;}
+          main.container{padding-bottom:24px !important;}
+        }
+      `}</style>
     </div>
   );
+}
+
+function menuBtn(): React.CSSProperties {
+  return {
+    width: "100%",
+    textAlign: "left",
+    display: "flex",
+    gap: 10,
+    alignItems: "center",
+    justifyContent: "flex-start",
+  };
 }
