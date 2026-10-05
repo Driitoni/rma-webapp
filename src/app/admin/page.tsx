@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import AppShell from "@/components/AppShell";
 import { supabase } from "@/lib/supabaseClient";
 
 type Profile = {
@@ -182,11 +183,11 @@ export default function AdminPage() {
     await loadUsers();
   }
 
-  if (loading) return <main style={{ padding: 24 }}>Loading...</main>;
-  if (!meOk) return <main style={{ padding: 24 }}>Not allowed.</main>;
+  if (loading) return <AppShell title="Administration" tierLabel="Admin">Loading...</AppShell>;
+  if (!meOk) return <AppShell title="Administration" tierLabel="Admin">Not allowed.</AppShell>;
 
   return (
-    <main style={{ minHeight: "100vh", padding: 24 }}>
+    <AppShell title="Administration" tierLabel="Admin">
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
           <h1 style={{ fontSize: 28, fontWeight: 950 }}>Admin Panel</h1>
@@ -368,7 +369,7 @@ export default function AdminPage() {
           </div>
         </section>
       </div>
-    </main>
+    </AppShell>
   );
   async function copy(text: string) {
   try {

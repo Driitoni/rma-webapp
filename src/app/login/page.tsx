@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
@@ -24,9 +25,10 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="container" style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
+    <main className="container auth-page" style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
       <div className="panel" style={{ width: "100%", maxWidth: 520, padding: 22 }}>
-        <div className="badge">🔐 Secure Login</div>
+        <Link href="/" className="member-brand auth-brand"><b>R</b><span>RICH MODE<small>ACADEMY</small></span></Link>
+        <div className="badge">MEMBER SIGN IN</div>
         <h1 className="h1" style={{ marginTop: 10 }}>
           Welcome back
         </h1>
@@ -35,12 +37,12 @@ export default function LoginPage() {
         <form onSubmit={onSubmit} className="grid" style={{ marginTop: 14 }}>
           <div>
             <label className="small">Email</label>
-            <input className="input" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required />
+            <input aria-label="Email" autoComplete="email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required />
           </div>
 
           <div>
             <label className="small">Password</label>
-            <input className="input" value={pass} onChange={(e) => setPass(e.target.value)} type="password" required />
+            <input aria-label="Password" autoComplete="current-password" className="input" value={pass} onChange={(e) => setPass(e.target.value)} type="password" required />
           </div>
 
           {msg && <div className="small">{msg}</div>}

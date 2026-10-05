@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import AppShell from "@/components/AppShell";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function PrivatePage() {
@@ -31,10 +32,10 @@ export default function PrivatePage() {
     })();
   }, [r]);
 
-  if (loading) return <main style={{ padding: 24 }}>Checking access...</main>;
+  if (loading) return <AppShell title="Private area" tierLabel="Private">Checking access...</AppShell>;
 
   return (
-    <main style={{ minHeight: "100vh", padding: 24 }}>
+    <AppShell title="Private area" tierLabel="Private">
       <div style={{ maxWidth: 900, margin: "0 auto", border: "1px solid #ddd", borderRadius: 14, padding: 18 }}>
         <h1 style={{ fontSize: 28, fontWeight: 950 }}>🔒 Private Members Area</h1>
         <p style={{ opacity: 0.7, marginTop: 8 }}>
@@ -64,6 +65,6 @@ export default function PrivatePage() {
           Back to Dashboard
         </button>
       </div>
-    </main>
+    </AppShell>
   );
 }

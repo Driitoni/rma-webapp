@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import AppShell from "@/components/AppShell";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function UpgradePage() {
@@ -31,10 +32,10 @@ export default function UpgradePage() {
     })();
   }, [r]);
 
-  if (loading) return <main style={{ padding: 24 }}>Loading...</main>;
+  if (loading) return <AppShell title="Membership" tierLabel="Free">Loading...</AppShell>;
 
   return (
-    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 24 }}>
+    <AppShell title="Membership" tierLabel="Free">
       <div style={{ width: "100%", maxWidth: 560, border: "1px solid #ddd", borderRadius: 14, padding: 18 }}>
         <h1 style={{ fontSize: 28, fontWeight: 950 }}>Upgrade to Private</h1>
         <p style={{ opacity: 0.7, marginTop: 8 }}>
@@ -55,19 +56,19 @@ export default function UpgradePage() {
             <div style={{ fontWeight: 900 }}>📩 How to upgrade (for now)</div>
             <p style={{ opacity: 0.8, marginTop: 6 }}>
               Message admin and send your email. Admin will upgrade your account manually.
-              (Later we connect Stripe for automatic upgrade.)
+
             </p>
           </div>
         </div>
 
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 14 }}>
           <button onClick={() => r.push("/dashboard")} style={btn()}>Back to Dashboard</button>
-          <button onClick={() => alert("Later we add Stripe ✅")} style={btnPrimary()}>
-            Upgrade (Stripe later)
+          <button onClick={() => r.push("/plans")} style={btnPrimary()}>
+            Compare memberships
           </button>
         </div>
       </div>
-    </main>
+    </AppShell>
   );
 }
 

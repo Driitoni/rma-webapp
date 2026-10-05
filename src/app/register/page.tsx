@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
@@ -26,23 +27,24 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="container" style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
+    <main className="container auth-page" style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
       <div className="panel" style={{ width: "100%", maxWidth: 520, padding: 22 }}>
-        <div className="badge badgeGold">👑 Start your 30-day run</div>
+        <Link href="/" className="member-brand auth-brand"><b>R</b><span>RICH MODE<small>ACADEMY</small></span></Link>
+        <div className="badge badgeGold">YOUR NEXT CHAPTER</div>
         <h1 className="h1" style={{ marginTop: 10 }}>
           Create your account
         </h1>
-        <p className="p">Join the system. Take action daily. Become unrecognizable.</p>
+        <p className="p">Build a daily learning rhythm around mindset, money and markets.</p>
 
         <form onSubmit={onSubmit} className="grid" style={{ marginTop: 14 }}>
           <div>
             <label className="small">Email</label>
-            <input className="input" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required />
+            <input aria-label="Email" autoComplete="email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required />
           </div>
 
           <div>
             <label className="small">Password (8+)</label>
-            <input className="input" value={pass} onChange={(e) => setPass(e.target.value)} type="password" minLength={8} required />
+            <input aria-label="Password" autoComplete="new-password" className="input" value={pass} onChange={(e) => setPass(e.target.value)} type="password" minLength={8} required />
           </div>
 
           {msg && <div className="small">{msg}</div>}
